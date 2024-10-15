@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database-fastfood-deployment
+  namespace: namespace-fastfood
+  labels:
+    app: database-fastfood
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: database-fastfood
+  template:
+    metadata:
+      labels:
+        app: database-fastfood
+    spec:
+      containers:
+        - name: database-fastfood
+          image: postgres:13.16
+          ports:
+            - containerPort: 3306
+          env:
+            - name: POSTGRES_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fastfood-secret
+                  key: postgres_root_password
+            - name: POSTGRES_DATABASE
+              value: fastfood_service
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: fastfood-secret
+                  key: postgres_user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fastfood-secret
+                  key: postgres_password

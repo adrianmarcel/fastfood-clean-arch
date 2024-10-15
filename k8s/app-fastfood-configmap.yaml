@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-fastfood-configmap
+  namespace: namespace-fastfood
+data:
+  datasource_url: jdbc:postgresql://187.180.174.56:3306/fastfood_service
