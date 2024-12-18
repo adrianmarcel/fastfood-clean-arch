@@ -1,12 +1,46 @@
-version: '3'
+version: '3.8'
+
 services:
-  postgres:
-    image: "postgres"
-    environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=root
+  fastfood_bd:
+    platform: linux/x86_64
+    container_name: fastfood_bd
+    image: postgres:15
+    env_file:
+      - .env
+    networks:
+      - fastfood_net
+    volumes:
+      - fastfood_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    volumes:
-      - /postgres-data:/var/lib/postgresql/data
+    expose:
+      - "5432"
+
+  app:
+    container_name: fastfood-clean-arch
+    build:
+      context: "./"
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    networks:
+      - fastfood_net
+    depends_on:
+      - fastfood_bd
+    environment:
+      - DB_HOST=fastfood_bd
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    links:
+      - fastfood_bd
+
+networks:
+  fastfood_net:
+    driver: bridge
+
+volumes:
+  fastfood_data:
